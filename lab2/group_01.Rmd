@@ -1,0 +1,356 @@
+---
+title: "Visualization lab 2"
+author: "Johannes Hedström, Mikael Montén"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+\captionsetup[figure]{name= Figure} 
+\setcounter{Figure}{0}
+
+
+```{r global-options, include=FALSE}
+# setting graphs to be 1:1.5 in size in global options
+knitr::opts_chunk$set(echo = TRUE, fig.width = 6,fig.height = 4, fig.align = 'center')
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# load necessary libraries
+library(dplyr) 
+library(ggplot2)
+library(gridExtra)
+library(plotly)
+library(shiny)
+library(knitr)
+library(readxl)
+library(MASS)
+library(tidyverse)
+```
+
+# Work distrubution
+
+Both of us wrote code and comments for each task individually and the comments/code for this lab is a mix of our solutions.
+
+# Assignment 1
+
+## 1.1
+
+
+
+```{r, fig.cap='Scatter plot with continuous color scale for the amount of Linoleic'}
+# loading the data
+olive <- read.csv('olive.csv')
+olive <- olive[,-1]
+
+four_classes <- cut_interval(olive$linoleic,4)
+levels(four_classes) <- c("[448,704]", "(704,959]" ,"(959,1210]","(1210,1470]")  # changing from e0.3 to thousand
+olive$four_classes <- four_classes
+
+p11 <- ggplot(data = olive, aes(x = palmitic, y = oleic, color = linoleic)) + geom_point() + theme_bw() + 
+  theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) + scale_color_gradient(low = "orange", high = "purple") +
+  labs(color = "Linoleic", y = "Oleic", x = "Palmitic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+p11
+
+
+
+```
+
+```{rfig.cap='Scatter plot with discrete color scale for the intervals of the amount Linoleic'}
+
+p12 <- ggplot(data = olive, aes(x = palmitic, y = oleic, color = four_classes)) + geom_point() + theme_bw() + 
+  theme(axis.title.y = element_text(angle = 0, vjust = 0.5))  + 
+  labs(color = "Linoleic", y = "Oleic", x = "Palmitic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+p12
+
+```
+
+
+
+Its pretty easy to analyze both of them and differentiate between groups. However the 2nd one with discrete breaks in the color is better. In the first one, the color is treated as a continuous variable which, although at large it looks good, basically creates too many different colors. With the continuous scale it takes longer time to interpret and understand what the color scale means, 4 discrete colors makes you see the groups preattentive.
+
+
+
+## 1.2
+
+### a 
+```{r, warning=FALSE,fig.cap='Scatter plot with discrete color scale for the intervals of the amount Linoleic'}
+p21 <- ggplot(data = olive, aes(x = palmitic, y = oleic, color = four_classes)) + geom_point() + theme_bw() + 
+  theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
+  scale_color_discrete() + 
+  labs(color = "Linoleic", y = "Oleic", x = "Palmitic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+p21
+```
+
+### b
+```{r, warning=FALSE,fig.cap='Scatter plot with size for the intervals of Linoleic'}
+
+p22 <- ggplot(data = olive, aes(x = palmitic, y = oleic, size = four_classes)) + geom_point() + theme_bw() + 
+  theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
+  scale_size_discrete() + 
+  labs(fill = "Linoleic", y = "Oleic", x = "Palmitic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+p22
+
+```
+
+### c
+```{r, warning=FALSE, fig.cap='Scatter plot with angle orientation for the the intervals of Linoleic'}
+p23 <- ggplot(data = olive, aes(x = palmitic, y = oleic)) + theme_bw() + geom_spoke(aes(angle = as.numeric(cut_interval(linoleic, 4)), radius = 30)) +
+  theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) + geom_point()  + 
+  labs(color = "Linoleic", y = "Oleic", x = "Palmitic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+p23
+```
+
+The graph(a) which map the classes with color is the easiest to interpret and see borders as humans can perceive more bits of this mapping. The graph with size is very hard to see any borders and points overlap so information might be missing, humans can perceive up to 2.2 bits when it comes to sizes(4-5 levels).
+
+To map the intervals with orientation angle its quite hard to understand what the lines means and they overlap with each other, its better than size but worse than color. Humans can perceive higher bits when it comes to orientations than size, but lower than hue. 
+
+
+
+## 1.3
+
+
+```{r,fig.cap='Scatter plot with continous color scale for Region'}
+
+p31 <- ggplot(data = olive, aes(x = eicosenoic, y = oleic, color = Region)) + geom_point() +
+  scale_color_gradient(low = "orange", high = "purple")+ theme_bw()+
+  labs(fill = "Region", y = "Oleic", x = "Eicosenoic")+
+  theme(axis.title.y=element_text(angle=0, vjust=0.5)) 
+p31
+
+```
+The problem is that Region which is a discrete variable with 3 levels is being depicted in the legend as a continuous variable and therefore can be confusing. There is no inherent gradient between the colors and therefore the visualization shouldn't show that either.
+When the doing a categorical value without any order to numeric then it may seem that a region with a higher value is higher ranked than a lower value region, and the value is only dependent on how you coded each region. 
+
+
+```{r,fig.cap='Scatter plot with discrete color scale for Regions'}
+ggplot(olive, aes(x=eicosenoic, y=oleic, color=as.factor(Region))) + geom_point() + 
+  scale_color_discrete(name = "Regions", type='viridis') +  
+  theme_bw() + xlab('Eicosenoic') + ylab('Oleic') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+
+
+```
+
+Since the plot show well defined clusters you can identify decision boundaries quick in both plots.
+However the latter one is more clear and concise since it doesn't trick you into looking for continuous values where there aren't. This makes it faster to analyze the graph and you pre-attentive mechanism is enough to analyze the observation points.
+
+## 1.4 
+
+```{r, fig.cap='Scatterplot with 27 different types of observations', warning=FALSE}
+
+three_classespalmatic <- cut_interval(olive$palmitic,3)
+levels(three_classespalmatic) <- c("[610,991]",  "(991,1370]"  , "(1370,1750]") # changing from e0.3 to thousand
+olive$three_classespalmatic <- three_classespalmatic
+
+
+three_classeslin <- cut_interval(olive$linoleic,3)
+levels(three_classeslin) <- c("[448,789]","(789,1130]", "(1130,1470]")  # changing from e0.3 to thousand
+olive$three_classeslin <- three_classeslin
+
+olive$three_classespalm <-cut_interval(olive$palmitoleic,3)
+
+
+
+ggplot(olive, aes(x=eicosenoic, y=oleic, color=three_classeslin,shape=three_classespalmatic, size = three_classespalm)) + geom_point() + 
+  scale_color_discrete(name = "Linoleic", type='viridis') +   scale_shape_discrete(name = "Palmitic") +  
+  scale_size_discrete(name = "Palmitoleic") +  
+  theme_bw() + xlab('Eicosenoic') + ylab('Oleic') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+cat('Bits for 27 levels',log2(27)) 
+
+```
+
+It's difficult to differentiate between the 27 different types of observations. The fact that you have both size, shape and color to analyze activates your attentive mechanism that is slower and requires more in depth analyzing to grasp the portrayed information. The perception problem that is being demonstrated here is how the human mind is affected when we are presented with too many levels and therefore a high amount of bits.
+With these many different types of observations the levels and bits goes beyond the human perception. 
+
+## 1.5
+
+```{r, fig.cap='Scatterplot with 27 different types of observations where color is defined by Region', warning=FALSE}
+
+ggplot(olive, aes(x=eicosenoic, y=oleic, color=as.factor(Region),shape=three_classespalmatic, size = three_classespalm)) + geom_point() + 
+  scale_color_discrete(name = "Region", type='viridis') +   scale_shape_discrete(name = "Palmitic") +  
+  scale_size_discrete(name = "Palmitoleic") +  
+  theme_bw() + xlab('Eicosenoic') + ylab('Oleic') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+
+```
+
+
+Its easier to see the boundary with region as color mapping as its a nominal variable from the beginning and its a big difference in the dependence between Oleic and Eicosenoic for the regions. This relates to the Treisman theory of how graphs are constructed in different layers and how they are analyzed individually by the human brain.
+The fact that there are alot of sizes and shapes does not matter in the sense that there is clear distinction between the colors.
+
+
+
+## 1.6
+
+```{r,fig.cap='Pie chart over the propotions of oils for the Areas', warning=FALSE}
+
+fig <- olive[,-1] %>% group_by(Area) %>% summarise(count=n())
+fig %>% plot_ly(labels=~Area, values = ~count,type='pie') %>% 
+  layout(showlegend=FALSE )
+
+```
+
+The problem that is demonstrated is that its hard to differentiate between what region actually has what share of oils. The percentages gives a numerical idea, but its hard to relate it graphically since the you cant see clear differences between many of the regions. A sorted barplot would be a better way to visualize this data as it would enable the reader to only use their pre-attentive mechanism in analyzing the differences.
+without a clear axis its hard to decipher what is actually being visualized as well.
+
+
+## 1.7
+
+
+```{r, fig.cap='2d-density contour plot'}
+
+
+ggplot(olive, aes(x=linoleic ,y=eicosenoic)) + geom_density_2d()+  
+  theme_bw() + xlab('Linoleic') + ylab('Eicosenoic') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+
+
+```
+
+
+
+```{r, fig.cap='2d-density contour plot combined with a scatterplot'}
+
+
+
+ggplot(olive, aes(x=linoleic ,y=eicosenoic)) +  geom_density_2d()+  geom_point()+  
+  theme_bw() + xlab('Linoleic') + ylab('Eicosenoic') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+
+```
+
+
+The contour plot recognizes high levels of density at around 4 particular spots in the graph. This could lead the reader to believe there is differentiated groups at these spots. However, the scatter plot show that there aren't really clear differences between those areas. A few of the hot spots in the contour plot could be considered the same cluster by analyzing the scatterplot.
+
+
+
+
+# Assignment 2
+
+## 2.1 
+
+
+```{r}
+baseball <- read_excel("baseball-2016.xlsx")
+baseball_num <- scale(baseball[,3:28]) # scaling the numeric variables 
+```
+
+Its reasonable to scale the variables as some are percentage some are other are counts over 1000 or averages with lots of decimals. To rescale everything variables with higher values wont get higher weights then other variables for the distances. 
+
+
+### 2.2
+```{r, fig.cap='Scatter plot for 2 non metric MDS components', warning=FALSE, eval=FALSE}
+
+d <- dist(baseball_num)
+res <- isoMDS(d, k = 2)
+coords <- res$points
+
+coordsMDS <- as.data.frame(coords)
+coordsMDS$Team <- baseball$Team
+coordsMDS$League <- baseball$League
+
+
+plot_ly(coordsMDS, x=~V1, y=~V2, type="scatter", hovertext=~Team,color = ~League,colors='Set1')
+
+
+
+```
+
+There seems to exist some sort of difference between the leagues, with AL being slightly higher values than NL.
+This is based on a majority of the AL data points having a positive V2 value and NL majority having a negative.
+For V1 the difference is small so it is not very concise if there is a difference between them. That makes the V2 the best variable to differentiate between between the leagues. Boston Red Sox is an outlier for the AL region. NL does not seem to have any outlier teams.
+
+## 2.3 
+
+```{r, fig.cap='Shepard plot'}
+
+d <- dist(baseball_num)
+res <- isoMDS(d, k = 2)
+coords <- res$points
+
+coordsMDS <- as.data.frame(coords)
+coordsMDS$Team <- baseball$Team
+coordsMDS$League <- baseball$League
+
+
+sh <- Shepard(d, coords)
+delta <-as.numeric(d)
+D<- as.numeric(dist(coords))
+
+n=nrow(coords)
+index=matrix(1:n, nrow=n, ncol=n)
+index1=as.numeric(index[lower.tri(index)])
+
+n=nrow(coords)
+index=matrix(1:n, nrow=n, ncol=n, byrow = T)
+index2=as.numeric(index[lower.tri(index)])
+
+
+
+plot_ly()%>%
+  add_markers(x=~delta, y=~D, hoverinfo = 'text',
+              text = ~paste('Obj1: ', baseball$Team[index1],
+                            '<br> Obj 2: ', baseball$Team[index2]))%>%
+  add_lines(x=~sh$x, y=~sh$yf)
+
+
+```
+
+MDS seem to have performed slightly well, the points seem to have some variance and could be tighter. In the bottom of the graph, below (4,2) at least the Shephard plot shows an almost flat trend and a few points with an increasing D without delta increasing. This is also the case at the top but vice versa, around (14, 14) where a few points increases in delta but not in D. Both of these cases show that there are distances for the higher dimension that couldn't be properly fitted in a lower dimension without some form of information loss.
+Its hard for the MDS to pair Minnesota Twins and A(r)izona Diamondbacks and Oakland athletics with Milwaukee brewers as they are further away from the density of the points. 
+
+
+
+## 2.4
+
+```{r, fig.cap='Scatterplot between V2 component and homeruns'}
+
+baseball$V2 <- coordsMDS$V2
+
+ggplot(baseball, aes(y=V2, x=HR)) + geom_point() + geom_smooth(method = lm, se=FALSE)+
+  theme_bw()  + xlab('Homeruns') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+
+```
+
+
+```{r, fig.cap='Scatterplot between V2 component and sacrifice hit'}
+
+ggplot(baseball, aes(y=V2, x=SH)) + geom_point() + geom_smooth(method = lm, se=FALSE)+
+  theme_bw()  + xlab('Sacrifice hits') +
+  theme(axis.title.y=element_text(angle=0, vjust=0.5))
+
+```
+
+
+The variable with the strongest positive connection with v2 component is the HR(homeruns) and the strongest negative is SH(sacrifice hit) which when a player bunts the hit to advance other runners. When you bunt the ball its focus on just hitting the ball and the force will often be so low that its impossible to score a home run from a bunt, but both seem to be important for scoring points. A homerun have the possibility to generate more runs than a sacrificing hit.
+
+The v2 component could be the distance of bated balls per team, so teams with more home runs have a higher distance for the ball and teams that do more bunts have much less distance as the target is just to get the ball into play. 
+
+It could also be a risk taking / tactic component as bunts have a much higher hit rate than bats for homeruns and a higher V2 value could indicate teams taking a higher risk for the shot and a bunt is a safe shot and team that do more bunts therefore get a lower X2 value. 
+
+
+
+
