@@ -52,7 +52,7 @@ df1 <- df1 %>%
 
 
 ```{r, fig.cap = "Equirectangular map of mosquito detection 2004", out.width = "100%"}
-Sys.setenv('MAPBOX_TOKEN' = "sk.eyJ1Ijoid291bnRhaW4iLCJhIjoiY2xtZzk5dmhiMWNubjNrcXFidzhlYmU4cyJ9.4bXukm7QheBqcyBIXPLchw")
+# Sys.setenv('MAPBOX_TOKEN' = "sk.eyJ1Ijoid291bnRhaW4iLCJhIjoiY2xtZzk5dmhiMWNubjNTHISISAFAKETOKEN2464563456345hw")
 
 p1 <- plot_mapbox(df1) %>% filter(YEAR == 2004) %>% add_trace(type = "scattermapbox", lat = ~Y, lon = ~X,
                                                               color = ~VECTOR) %>% layout(mapbox = list(style = "open-street-map"))
