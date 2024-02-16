@@ -6,12 +6,12 @@ The work is done in Rmarkdown and html's have been generated, but they could be 
 
 The labs contain various types of graphs and problems, increasing in complexity!
 
-lab 1: Density plots in ggplot and plotly
-lab 2: Scatterplots created with ggplot and non-metric MDS on baseball data
-lab 3: Maps created with Mapbox and plotly(plot_geo)
-lab 4: Heatmaps and  parallel coordinatet created with plotly and trellis plot with ggplot
-lab 5: Several interactive graphs created with visNetwork and plotly
-lab 6: Word clouds created with wordcloud package and different interactive plots with filter and brushing etc created with plotly.
+lab 1: Density plots in ggplot and plotly and a shiny app! <br>
+lab 2: Scatterplots created with ggplot and non-metric MDS on baseball data <br>
+lab 3: Maps created with Mapbox and plotly(plot_geo) <br>
+lab 4: Heatmaps and  parallel coordinatet created with plotly and trellis plot with ggplot v
+lab 5: Several interactive graphs created with visNetwork and plotly <br>
+lab 6: Word clouds created with wordcloud package and different interactive plots with filter and brushing etc created with plotly. <br>
 
 #### If you have any questions regarding the work, please contact me
 
