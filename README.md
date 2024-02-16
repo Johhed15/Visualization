@@ -4,11 +4,8 @@
 
 
 
-<div align="center">
-  <img src="https://giphy.com/gifs/after-effects-animacion-koncepto-bmQBu3aSF0DxadphkG" width="600" height="300"/>
-</div>
 
 <div align="center">
-  <img src="https://giphy.com/embed/bmQBu3aSF0DxadphkG" width="600" height="300"/>
+  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYjMxMXlsM2JqYjU2anUyNHVvMGhpMjFuM2s3aHdibWtwZ3o3anRiMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bmQBu3aSF0DxadphkG/giphy.gif" width="600" height="600"/>
 </div>
 
