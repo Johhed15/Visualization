@@ -4,7 +4,7 @@ The code is written in R with mostly using packages like ggplot2, plotly, dplyr,
 The work is done in Rmarkdown and html's have been generated, but they could be too large to view here on github. 
 
 
-The labs contains different types of graphs and problem, the first two labs contains less complex problems than the other! 
+The labs contain various types of graphs and problems, increasing in complexity!
 
 
 #### If you have any questions regarding the work, please contact me
