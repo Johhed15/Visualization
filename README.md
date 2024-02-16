@@ -1,4 +1,4 @@
-# This repository contains some of the work me and another student did in a visualization course in my master!
+# This repository contains some of the work completed by me and two other students during a visualization course in my master's program.
 
 The code is written in R with mostly using packages like ggplot2, plotly, dplyr, tidyr and shiny.
 The work is done in Rmarkdown and html's have been generated, but they could be too large to view here on github. 
