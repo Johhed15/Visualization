@@ -23,10 +23,15 @@ library(ggplot2)
 library(gridExtra)
 library(plotly)
 library(shiny)
-data <- read.delim('SENIC.txt', header=FALSE, sep = "") # read the space delimited file into R
-var_name = c('ID', 'X1','X2','X3','X4','X5','X6','X7','X8','X9','X10','X11') # column name vector according to SENIC.pdf
+
+# read the space delimited file into R
+data <- read.delim('SENIC.txt', header=FALSE, sep = "")
+
+# column name vector according to SENIC.pdf
+var_name = c('ID', 'X1','X2','X3','X4','X5','X6','X7','X8','X9','X10','X11') 
 colnames(data) = var_name # change column names
-data[,c(7,10,11)] <- sapply(data[,c(7,10,11)],as.numeric) # changing the integer columns to numeric
+ # changing the integer columns to numeric
+data[,c(7,10,11)] <- sapply(data[,c(7,10,11)],as.numeric)
 
 
 # Text to describe the variables
@@ -47,14 +52,15 @@ ui <- fluidPage( # Slider input
   sliderInput(inputId="ws", label="Choose bandwidth size", value=0.1, min=0.1, max=1),
   
   # Checkbox input for all variables except X3
-  checkboxGroupInput('Variable', 'Variables to choose for graphs',c('X1 - Length of Stay' = 1,
-                                                     'X2 - Age' = 2,
-                                                     'X4 - Routine Culturing Ratio' = 4,
-                                                     'X5 - Routine Chest X-ray Ratio' = 5,
-                                                     'X6 - Number of Beds' = 6,
-                                                     'X9 - Average Daily Census' = 9,
-                                                     'X10 - Number of Nurses' = 10,
-                                                     'X11 - Available Facilities & Services' = 11)),
+  checkboxGroupInput('Variable', 'Variables to choose for graphs',
+                           c('X1 - Length of Stay' = 1,
+                           'X2 - Age' = 2,
+                           'X4 - Routine Culturing Ratio' = 4,
+                           'X5 - Routine Chest X-ray Ratio' = 5,
+                           'X6 - Number of Beds' = 6,
+                           'X9 - Average Daily Census' = 9,
+                           'X10 - Number of Nurses' = 10,
+                           'X11 - Available Facilities & Services' = 11)),
   
   plotOutput("densPlot") # output
 )
@@ -66,14 +72,18 @@ server <- function(input, output,session) {
     p_list <- list()
     for (i in c(2,3,5,6,7,8,9,10,11,12)){
       var_name <- colnames(data[,2:12]) # Assigning the names
-      indice <- data.frame(data[quantile_func(data[,i]),i]) # using the function to collect the outliers
+          # using the function to collect the outliers
+      indice <- data.frame(data[quantile_func(data[,i]),i])
       colnames(indice) <- var_name[i-1]
       indice$Y <- rep(0,nrow(indice))
       # creating the plot and assigningn it to p1,p2 etc...
-      p_list[[i-1]] <- ggplot(data,aes_string(x= var_name[i-1] ))  + geom_density(bw=input$ws,fill=8,alpha=0.7) + 
-        geom_point(data=indice,aes(y=Y),shape=5)+ ylab('Density') + xlab(text[i]) + theme_bw()
+      p_list[[i-1]] <- ggplot(data,aes_string(x= var_name[i-1] ))  +
+                   geom_density(bw=input$ws,fill=8,alpha=0.7) + 
+        geom_point(data=indice,aes(y=Y),shape=5)+ ylab('Density') +
+         xlab(text[i]) + theme_bw()
     }
-    if (length(input$Variable) >=1){ # Controlling that at least 1 box is marked for a graph to be printed
+         # Controlling that at least 1 box is marked for a graph to be printed
+    if (length(input$Variable) >=1){ 
     grid.arrange(grobs = p_list[as.numeric(input$Variable)])}
   })
    
@@ -110,14 +120,17 @@ data_scb$region <- str_replace(data_scb$region,' county','')
 
 data_scb$region <- gsub("[[:digit:] ]", "",data_scb$region )
 
-data_scb$region[data_scb$region=='Örebro'] <- 'Orebro' # örebro is Orebro in json file..
-# there is also numbers and spaces for each region so that will have to be taken care of for a possible merge
+# örebro is Orebro in json file..
+data_scb$region[data_scb$region=='Örebro'] <- 'Orebro' 
+# there is also numbers and spaces for each region so that
+# will have to be taken care of for a possible merge
 
 g=list(fitbounds="locations", visible=FALSE)
 
 p<-plot_geo(data_scb)%>%add_trace(type="choropleth",geojson=data_json, locations=~region,
                                   z=~Young, featureidkey="properties.NAME_1",name="")%>%
-  add_trace(lat = ~58.41109, lon = ~15.62565, type='markers',marker=list(color="red"), name='Linköping') %>% # changed the color
+  add_trace(lat = ~58.41109, lon = ~15.62565, type='markers',marker=list(color="red"),
+          name='Linköping') %>% # changed the color
   layout(geo=g, showlegend = FALSE) # and name on the marker to red and Linköping!
 p
 
