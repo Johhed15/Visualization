@@ -18,6 +18,30 @@ lab 6: Word clouds created with wordcloud package and different interactive plot
 # A simple shiny app
 
 ```{r}
+library(dplyr) 
+library(ggplot2)
+library(gridExtra)
+library(plotly)
+library(shiny)
+data <- read.delim('SENIC.txt', header=FALSE, sep = "") # read the space delimited file into R
+var_name = c('ID', 'X1','X2','X3','X4','X5','X6','X7','X8','X9','X10','X11') # column name vector according to SENIC.pdf
+colnames(data) = var_name # change column names
+data[,c(7,10,11)] <- sapply(data[,c(7,10,11)],as.numeric) # changing the integer columns to numeric
+
+
+# Text to describe the variables
+text<- c('Identification Number',
+         'Length of Stay',
+         'Age',
+         'Infection Risk',
+         'Routine Culturing Ratio',
+         'Routine Chest X-ray Ratio',
+         'Number of Beds' ,
+         'Medical School Affiliation' ,
+         'Region',
+         'Average Daily Census',
+         'Number of Nurses',
+         'Available Facilities & Services')
 
 ui <- fluidPage( # Slider input 
   sliderInput(inputId="ws", label="Choose bandwidth size", value=0.1, min=0.1, max=1),
@@ -64,6 +88,14 @@ shinyApp(ui = ui, server = server)
 ## Starting with merging a csv and JSONfile
 
 ```R
+library(dplyr)
+library(plotly)
+library(rjson)
+library(geojsonio)
+library(sf)
+library(stringr)
+library(tidyr)
+
 # changed the encoding to get the åäö in the names
 data_scb <- read.csv("000006SW_20230912-130931.csv",fileEncoding = "ISO-8859-1")
 
