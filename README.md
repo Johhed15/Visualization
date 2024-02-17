@@ -17,7 +17,7 @@ lab 6: Word clouds created with wordcloud package and different interactive plot
 
 # A simple shiny app
 
-```{r}
+```R
 library(dplyr) 
 library(ggplot2)
 library(gridExtra)
