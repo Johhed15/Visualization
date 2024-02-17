@@ -83,6 +83,7 @@ server <- function(input, output,session) {
 shinyApp(ui = ui, server = server)
 ```
 <br>
+
 # A map of Sweden with Linköping pointed out as a red dot
 
 ## Starting with merging a csv and JSONfile
